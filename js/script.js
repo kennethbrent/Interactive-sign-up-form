@@ -197,7 +197,6 @@ form.submit(function () {
 	}
 	if($('#payment').val() === "credit card") {
 		if(ccNum.val().length < 13 || ccNum.val().length > 16 ) {
-			alert(ccNum.val().length);
 			errorMessage(ccNum,$(".span4"),"Card number must be between 13 and 16 digits");
 			}  
 		if(zip.val().length !== 5) {

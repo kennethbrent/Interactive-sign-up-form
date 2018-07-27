@@ -200,13 +200,14 @@ form.submit(function () {
 			alert(ccNum.val().length);
 			errorMessage(ccNum,$(".span4"),"Card number must be between 13 and 16 digits");
 			}  
-	}
-	if(zip.val().length !== 5) {
+		if(zip.val().length !== 5) {
 		errorMessage(zip,$(".span5"),"Please enter your zip code");
-	}
-	if(cvv.val().length !== 3) {
+		}
+		if(cvv.val().length !== 3) {
 		errorMessage(cvv,$(".span6"),"3 digit number is required");
-	}		
+		}	
+	}
+	
 });
 
 

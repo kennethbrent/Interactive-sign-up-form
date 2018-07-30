@@ -122,13 +122,15 @@ const paypal =  $('#credit-card').next();
 const bitcoin = paypal.next();
 const creditCard = $('#credit-card');
 const paymentDropdown = $('#payment');
-$(paymentDropdown).val("credit card");
 $("#payment option[value='select_method']").hide();
 const paymentOptions = paymentDropdown.children();
-
+$("#payment option[value='credit card']").attr("selected",true);
+paypal.hide();
+bitcoin.hide();
 
 paymentDropdown.change(function () {
 	$(paymentOptions[0]).hide();
+	
 	if(paymentDropdown.val() === 'paypal') {
 		creditCard.hide();
 		bitcoin.hide();
@@ -148,6 +150,7 @@ paymentDropdown.change(function () {
 //Form Validation                                                 //
 ///////////////////////////////////////////////////////////////////
 const form = $('form');
+
 const validFields = $("#name, #mail, #cc-num, #zip, #cvv");
 const errorSpan = $("<span class='errorMessage'></span>").insertAfter(validFields);
 const activitiesSpan = $('.activities legend').append("<span class='errorMessage activitiesSpan'</span>");
@@ -158,8 +161,7 @@ for(let i=0; i < spanList.length; i++) {
 	$(spanList[i]).addClass("span" + spanNumber);
 }
 
-form.submit(function () {
-	
+const validateForm = (e) =>{
 	const name = $('#name');
 	const mail= $('#mail');
 	const activity = $('.activities');
@@ -169,45 +171,69 @@ form.submit(function () {
 	const cvv = $("#cvv");
 	const emailAddress = $('#mail').val();
 	const validateEmail = (email) => 
-	{
-    let re = /\S+@\S+\.\S+/;
+		{
+    let re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
 
-	};
+		};
 	const errorMessage = (input,spanClass,spanText) => {
-		validFields.css("margin-bottom", "0px");
 		event.preventDefault();
+		input.css("margin-bottom", "0px");
 		input.css("border-color", "red");
 		$(spanClass).html(spanText);
-		return false;
-		
 };
+	const validInput = (input,spanClass) => {
+
+		input.css({'border':'2px solid #c1deeb', 'margin-bottom': '10px'});
+		$(spanClass).html("");
+		
+			
+};
+
 	if(name.val() === "") {
 		errorMessage(name,$('.span1'),"You forgot your name, silly");
-	} 
+	} else{
+		validInput(name,$('.span1'));	   
+	}
+	
 	if(validateEmail(emailAddress) === false) {
 		errorMessage(mail,$(".span2"),"A valid email address is required");
-	} 
-	if($(classes).prop('checked') === false) {
-		activity.css("border", "solid 1px blue");
-	}
+	} else{
+			validInput(mail,$(".span2"));  
+		}
+
+	
 	if($( 'input[class^="courses"]:checked' ).length === 0) {	
 		errorMessage($('.activities legend'), $('.activitiesSpan'),"You must enroll in atleast one course");
 		$('.activitiesSpan').css("margin-left", "10px");
-	}
-	if($('#payment').val() === "credit card") {
-		if(ccNum.val().length < 13 || ccNum.val().length > 16 ) {
-			errorMessage(ccNum,$(".span4"),"Card number must be between 13 and 16 digits");
-			}  
-		if(zip.val().length !== 5) {
-		errorMessage(zip,$(".span5"),"Please enter your zip code");
-		}
-		if(cvv.val().length !== 3) {
-		errorMessage(cvv,$(".span6"),"3 digit number is required");
-		}	
+	} else{
+		validInput($('.activities legend'),$('.activitiesSpan'));
+		$(".activities legend").css({"border": "none", "padding-top": ".5em", "border-top": "2px solid #679cb3"});
 	}
 	
+	if($('#payment').val() === "credit card") {
+		if(ccNum.val().length < 13 || ccNum.val().length > 16 || isNaN(ccNum.val()) ) {
+			errorMessage(ccNum,$(".span4"),"Card number must be between 13 and 16 digits");
+			} else{
+				validInput(ccNum,$('.span4'));
+			}
+		
+		if(zip.val().length !== 5 || isNaN(zip.val())) {
+		errorMessage(zip,$(".span5"),"Please enter your zip code");
+		}else {
+			validInput(zip,'.span5');
+		}
+		if(cvv.val().length !== 3 || isNaN(cvv.val())) {
+		errorMessage(cvv,$(".span6"),"3 digit number is required");
+		} else {
+			validInput(cvv,$(".span6"));
+		}
+	}
+	
+}; 
+
+$('form').on('submit', () => {
+	validateForm();
+
 });
 
-
-				 
